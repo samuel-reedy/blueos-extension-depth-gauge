@@ -1,24 +1,15 @@
-FROM python:3.11-slim
+vfrom python:3.9-slim-bullseye
 
-COPY app /app
-RUN python -m pip install /app --extra-index-url https://www.piwheels.org/simple
+COPY static /static
 
-EXPOSE 8000/tcp
-
-LABEL version="0.0.3"
-
-ARG IMAGE_NAME
-
-LABEL permissions='\
-{\
+LABEL version="1.0.1"
+LABEL permissions='{\
   "ExposedPorts": {\
-    "8000/tcp": {}\
+    "80/tcp": {}\
   },\
   "HostConfig": {\
-    "Binds":["/usr/blueos/extensions/$IMAGE_NAME:/app"],\
-    "ExtraHosts": ["host.docker.internal:host-gateway"],\
     "PortBindings": {\
-      "8000/tcp": [\
+      "80/tcp": [\
         {\
           "HostPort": ""\
         }\
@@ -26,30 +17,22 @@ LABEL permissions='\
     }\
   }\
 }'
-
-ARG AUTHOR
-ARG AUTHOR_EMAIL
 LABEL authors='[\
     {\
-        "name": "$AUTHOR",\
-        "email": "$AUTHOR_EMAIL"\
+        "name": "Willian Galvani",\
+        "email": "willian@bluerobotics.com"\
     }\
 ]'
-
-ARG MAINTAINER
-ARG MAINTAINER_EMAIL
 LABEL company='{\
         "about": "",\
-        "name": "$MAINTAINER",\
-        "email": "$MAINTAINER_EMAIL"\
+        "name": "Blue Robotics",\
+        "email": "support@bluerobotics.com"\
     }'
 LABEL type="example"
-ARG REPO
-ARG OWNER
-LABEL readme='https://raw.githubusercontent.com/$OWNER/$REPO/{tag}/README.md'
+LABEL readme='https://raw.githubusercontent.com/Williangalvani/BlueOS-examples/{tag}/example2-statichtml-mavlink/Readme.md'
 LABEL links='{\
-        "source": "https://github.com/$OWNER/$REPO"\
+        "website": "https://github.com/Williangalvani/BlueOS-examples/",\
+        "support": "https://github.com/Williangalvani/BlueOS-examples/"\
     }'
 LABEL requirements="core >= 1.1"
-
 ENTRYPOINT cd /static && python -m http.server 80
