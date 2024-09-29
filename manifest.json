@@ -1,0 +1,12 @@
+{
+    "name": "Depth Visualization",
+    "description": "Displays the ROV's ideal and current depth as circles",
+    "version": "1.0.0",
+    "type": "docker",
+    "entrypoint": "/entrypoint.sh",
+    "ui": {
+      "slug": "/depth-visualization",
+      "title": "Depth Visualization"
+    }
+  }
+  

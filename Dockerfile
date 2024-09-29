@@ -1,24 +1,35 @@
-FROM python:3.11-slim
+# Use nginx instead of python base image
+FROM nginx:alpine
 
-COPY app /app
-RUN python -m pip install /app --extra-index-url https://www.piwheels.org/simple
+# Copy the web application files (HTML, CSS, JS) to Nginx's web directory
+COPY app/ /usr/share/nginx/html
 
-EXPOSE 8000/tcp
+# Expose port 80 for HTTP traffic (Nginx default port)
+EXPOSE 80/tcp
 
+# Metadata labels with version
 LABEL version="0.0.3"
 
+# ARG values to pass in during the build
 ARG IMAGE_NAME
+ARG AUTHOR
+ARG AUTHOR_EMAIL
+ARG MAINTAINER
+ARG MAINTAINER_EMAIL
+ARG REPO
+ARG OWNER
 
+# Permissions label for BlueOS extension
 LABEL permissions='\
-{\
+{\ 
   "ExposedPorts": {\
-    "8000/tcp": {}\
+    "80/tcp": {}\
   },\
   "HostConfig": {\
-    "Binds":["/usr/blueos/extensions/$IMAGE_NAME:/app"],\
+    "Binds":["/usr/blueos/extensions/$IMAGE_NAME:/usr/share/nginx/html"],\
     "ExtraHosts": ["host.docker.internal:host-gateway"],\
     "PortBindings": {\
-      "8000/tcp": [\
+      "80/tcp": [\
         {\
           "HostPort": ""\
         }\
@@ -27,29 +38,28 @@ LABEL permissions='\
   }\
 }'
 
-ARG AUTHOR
-ARG AUTHOR_EMAIL
-LABEL authors='[\
-    {\
+# Author and maintainer information labels
+LABEL authors='[\ 
+    {\ 
         "name": "$AUTHOR",\
         "email": "$AUTHOR_EMAIL"\
-    }\
+    }\ 
 ]'
-
-ARG MAINTAINER
-ARG MAINTAINER_EMAIL
 LABEL company='{\
         "about": "",\
         "name": "$MAINTAINER",\
         "email": "$MAINTAINER_EMAIL"\
     }'
+
+# Label for project source and documentation
 LABEL type="example"
-ARG REPO
-ARG OWNER
-LABEL readme='https://raw.githubusercontent.com/$OWNER/$REPO/{tag}/README.md'
+LABEL readme="https://raw.githubusercontent.com/$OWNER/$REPO/{tag}/README.md"
 LABEL links='{\
         "source": "https://github.com/$OWNER/$REPO"\
     }'
+
+# BlueOS core requirements
 LABEL requirements="core >= 1.1"
 
-ENTRYPOINT cd /static && python -m http.server 80
+# The entrypoint is to run nginx in the foreground
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
