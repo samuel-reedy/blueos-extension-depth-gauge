@@ -3,15 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Depth Visualization</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Depth Gauge</title>
+    <style>
+        /* Simple circle styles */
+        .circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: lightblue;
+            text-align: center;
+            line-height: 150px;
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div id="ideal-circle" class="circle">Ideal Depth</div>
-        <div id="current-circle" class="circle">Current Depth</div>
+    <div>
+        <div>Ideal Depth: <input type="number" id="idealDepth" value="10"> m</div>
+        <div id="idealCircle" class="circle">10 m</div>
+        <br/>
+        <div>Current Depth:</div>
+        <div id="currentCircle" class="circle">0 m</div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="mavlink.js"></script>
+    <script>
+        // Set ideal depth
+        const idealInput = document.getElementById("idealDepth");
+        const idealCircle = document.getElementById("idealCircle");
+        idealInput.addEventListener('input', function() {
+            idealCircle.textContent = idealInput.value + " m";
+        });
+
+        // Update current depth from MAVLink
+        function updateCurrentDepth(depth) {
+            const currentCircle = document.getElementById("currentCircle");
+            currentCircle.textContent = depth.toFixed(2) + " m";
+        }
+
+        // Connect to MAVLink and fetch depth data
+        const mavlink = new MAVLinkConnection("ws://localhost:14550");
+        mavlink.onMessage = function(message) {
+            if (message.msgid === 29) {  // 29 is the message ID for depth
+                const currentDepth = message.payload.current_depth;
+                updateCurrentDepth(currentDepth);
+            }
+        };
+    </script>
 </body>
 </html>

@@ -1,12 +1,10 @@
 {
-    "name": "Depth Visualization",
-    "description": "Displays the ROV's ideal and current depth as circles",
-    "version": "1.0.0",
-    "type": "docker",
-    "entrypoint": "/entrypoint.sh",
-    "ui": {
-      "slug": "/depth-visualization",
-      "title": "Depth Visualization"
-    }
-  }
-  
+    "id": "blueos-depth-gauge",
+    "name": "Depth Gauge",
+    "description": "Displays ideal and current ROV depth",
+    "version": "1.0",
+    "icon": "gauge",
+    "page": "/static/index.html", 
+    "permissions": ["mavlink"],
+    "category": "tools"
+}
